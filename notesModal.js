@@ -1,7 +1,7 @@
 const mongoose=require('mongoose')
 
 const notesShema=mongoose.Schema({
-
+    imageUrl:{type:String},
     title:{type:String,required:true},
     content:{type:String,required:true},
     status:{type:Boolean},

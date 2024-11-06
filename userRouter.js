@@ -4,27 +4,24 @@ const bcrypt=require('bcrypt')
 const userModal = require('./userModal.js')
 const jwt=require('jsonwebtoken')
 
-
-userRouter.post("/register",(req,res)=>{
-
+userRouter.post("/register", async (req, res) => {
     try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(req.body.password, 3);
+        req.body.password = hashedPassword;
 
-        bcrypt.hash(req.body.password,3,async function(err,hash){
-
-if(err){
-    return res.status(400).json({msg:'error'})
-}
-req.body.password=hash
-
-const signData=await userModal.create(req.body)
-
-res.status(200).json({msg:'user register success'})
-        })
-        
+        // Attempt to create the user
+        const signData = await userModal.create(req.body);
+        res.status(200).json({ msg: 'User registered successfully' });
     } catch (error) {
-        res.status(400).json({msg:'error in register'})
+        // Check for duplicate key error (error code 11000)
+        if (error.code === 11000 && error.keyPattern.email) {
+            res.status(400).json({ msg: 'Opps! Already in use..' });
+        } else {
+            res.status(500).json({ msg: 'Error in registration' });
+        }
     }
-})
+});
 
 
 userRouter.post('/login', async (req, res) => {
