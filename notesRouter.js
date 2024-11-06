@@ -10,8 +10,9 @@ const notesRouter=express.Router()
 notesRouter.post("/create",async(req,res)=>{
 
 try {
-    // const data=await notesModel.create({...req.body,userId:req.userId})
+    
     const data = await notesModel.create({ ...req.body, userId: req.userId, imageUrl: req.body.imageUrl });
+    
     res.status(200).json({msg:"notes created success",data})
 } catch (error) {
     res.status(500).json({ msg: 'Failed to create notes', error: error.message });
